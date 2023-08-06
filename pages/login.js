@@ -11,8 +11,24 @@ import {
 } from "react-icons/hi";
 import { signIn, signOut } from "next-auth/react";
 import { useState } from "react";
+import { useFormik } from "formik";
+import login_validate from "@/library/validate";
 export default function Login() {
   const [show, setShow] = useState(false);
+  //Formik Hook
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validate: login_validate,
+    onSubmit: onsubmit,
+  });
+
+  async function onsubmit(values) {
+    console.log(values);
+  }
+
   // Google sign in function
 
   async function handleGoogleSignIn() {
@@ -38,24 +54,43 @@ export default function Login() {
           </p>
         </div>
         {/* Login Forms */}
-        <form className="flex flex-col gap-5">
-          <div className={Styles.input_group}>
+        <form className="flex flex-col gap-5 " onSubmit={formik.handleSubmit}>
+          <div
+            className={`${Styles.input_group} ${
+              formik.errors.email && formik.touched.email
+                ? "border-rose-600"
+                : ""
+            }`}
+          >
             <input
               className={Styles.input_text}
               type="email"
               name="email"
               placeholder="Email"
+              {...formik.getFieldProps("email")}
             />
             <span className="icon flex items-center px-4">
               <HiAtSymbol size={21} />
             </span>
           </div>
-          <div className={Styles.input_group}>
+          {/* {formik.errors.email && formik.touched.email ? (
+            <span className="text-rose-500 text-sm">{formik.errors.email}</span>
+          ) : (
+            <></>
+          )} */}
+          <div
+            className={`${Styles.input_group} ${
+              formik.errors.password && formik.touched.password
+                ? "border-rose-600"
+                : ""
+            }`}
+          >
             <input
               className={Styles.input_text}
               type={`${show ? "text" : "password"}`}
               name="password"
               placeholder="Password"
+              {...formik.getFieldProps("password")}
             />
 
             <span
@@ -68,6 +103,13 @@ export default function Login() {
               {/* <HiLockClosed size={21} /> */}
             </span>
           </div>
+          {/* {formik.errors.password && formik.touched.password ? (
+            <span className="text-rose-500 text-sm">
+              {formik.errors.password}
+            </span>
+          ) : (
+            <></>
+          )} */}
 
           {/* Login Buttons */}
 
@@ -86,7 +128,12 @@ export default function Login() {
               type="button"
             >
               Sign in with Google{"   "}
-              <Image src={"./assets/google.svg"} width={20} height={20}></Image>
+              <Image
+                src={"./assets/google.svg"}
+                alt="pic"
+                width={20}
+                height={20}
+              ></Image>
             </button>
           </div>
 
@@ -99,7 +146,12 @@ export default function Login() {
               className={Styles.button_custom}
             >
               Sign in with Github{"   "}
-              <Image src={"./assets/github.svg"} width={25} height={25}></Image>
+              <Image
+                src={"./assets/github.svg"}
+                alt="pic"
+                width={25}
+                height={25}
+              ></Image>
             </button>
           </div>
         </form>
